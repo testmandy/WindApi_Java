@@ -7,7 +7,7 @@ import java.util.ResourceBundle;
  * @Author mandy
  * @Create 2019/10/17 11:25
  */
-public class ReadFile {
+public class ReadEnv {
     private static ResourceBundle bundle = ResourceBundle.getBundle("env", Locale.CHINA);
 
     public static String getUrl(InterfaceName name){
@@ -24,6 +24,19 @@ public class ReadFile {
         if (name == InterfaceName.NEARSPHERE) {
             uri = bundle.getString("nearSphere.url");
         }
+        if (name == InterfaceName.PUBLISHCARDURL) {
+            uri = bundle.getString("publishCard.url");
+        }
+        if (name == InterfaceName.MODIFYCARDURL) {
+            uri = bundle.getString("modifyCard.url");
+        }
+        if (name == InterfaceName.REMOVECARDURL) {
+            uri = bundle.getString("removeCard.url");
+        }
+        if (name == InterfaceName.TOPICLISTURL) {
+            uri = bundle.getString("topicList.url");
+        }
+
 
 
         testUrl  = base + uri;

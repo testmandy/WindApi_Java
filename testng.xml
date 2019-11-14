@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<suite name="Wind什么风接口测试套件">
+    <test name="Wind什么风接口测试用例">
+        <classes>
+            <class name="com.wind.testcases.LoginTest">
+                <methods>
+                    <include name="loginTrue"/>
+                </methods>
+            </class>
+            <class name="com.wind.testcases.CardTest">
+                <methods>
+                    <include name="getTopicList"/>
+                    <include name="getMyCards"/>
+                    <include name="publishCard"/>
+                    <include name="modifyCard"/>
+                    <include name="removeCard"/>
+
+                </methods>
+            </class>
+        </classes>
+
+    </test>
+    <listeners>
+        <listener class-name="com.wind.config.ExtentTestNGIReporterListener"/>
+    </listeners>
+</suite>
