@@ -2,18 +2,19 @@ package com.wind.testcases;
 
 import com.wind.common.InterfaceName;
 import com.wind.common.ReadEnv;
-import com.wind.common.TestConfig;
+import com.wind.config.DBUtil;
+import com.wind.config.TestConfig;
 import com.wind.common.TestMethod;
+import com.wind.model.LoginModel;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.ibatis.session.SqlSession;
 import org.json.JSONObject;
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,19 +58,23 @@ public class LoginTest {
         System.out.println("[Mylog]------result的内容为:" + result);
         JSONObject resJson = new JSONObject(result);
         System.out.println("[Mylog]------resJson的内容为:" + resJson);
+        // 获取实际结果
+        String actureId = resJson.getJSONObject("data").getString("id");
+        int code = resJson.getInt("code");
+        System.out.println("[Mylog]------用户expectId为：" + actureId);
 
         // 为公共参数token重新赋值
         TestConfig.token = resJson.getJSONObject("data").getString("token");
 
-        // 判断执行结果
-        String id = resJson.getJSONObject("data").getString("id");
-        int code = resJson.getInt("code");
-        System.out.println("[Mylog]------用户id为：" + id);
+        // 执行sql，获取期望结果
+        SqlSession session = DBUtil.getSqlsession();
+        LoginModel loginModel = session.selectOne("loginCase",2);
+        String expectId = loginModel.getId();
+        System.out.println("SQL查询到的结果：" + loginModel);
+
+        // 断言结果
         Assert.assertEquals(code,200);
-        Assert.assertEquals(id,"5d6d2d17cb0e2900707524bc");
-
-        // 执行sql
-
+        Assert.assertEquals(actureId,expectId);
     }
 
 }

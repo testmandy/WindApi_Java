@@ -8,7 +8,13 @@ import java.util.ResourceBundle;
  * @Create 2019/10/17 11:25
  */
 public class ReadEnv {
-    private static ResourceBundle bundle = ResourceBundle.getBundle("env", Locale.CHINA);
+    private static ResourceBundle bundle = ResourceBundle.getBundle("application",Locale.CHINA);
+
+
+    public static String getData(String key){
+        String data = bundle.getString(key);
+        return data;
+    }
 
     public static String getUrl(InterfaceName name){
         String testUrl;
@@ -37,21 +43,11 @@ public class ReadEnv {
             uri = bundle.getString("topicList.url");
         }
 
-
-
         testUrl  = base + uri;
         System.out.println(testUrl);
         return testUrl;
 
-
     }
-
-
-    public static String getData(String key){
-        String data = bundle.getString(key);
-        return data;
-    }
-
 
 }
 

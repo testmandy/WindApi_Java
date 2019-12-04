@@ -30,7 +30,7 @@ public class ExcelReader {
      * @param path 地址
      * @throws IOException IO异常
      */
-    public List<List<String>> readExcel(String path) {
+    private List<List<String>> readExcel(String path) {
         String fileType = path.substring(path.lastIndexOf(".") + 1);
         // return a list contains many list
         List<List<String>> lists = new ArrayList<List<String>>();
@@ -50,19 +50,20 @@ public class ExcelReader {
 
             //读取第一个工作页sheet
             Sheet sheet = wb.getSheetAt(0);
+
             System.out.println("sheet内容为：" + sheet);
 
-//            //第一行为标题
-//            for (Row row : sheet) {
-//                ArrayList<String> list = new ArrayList<String>();
-//                for (Cell cell : row) {
-//                    //根据不同类型转化成字符串
-//                    cell.setCellType(Cell.CELL_TYPE_STRING);
-//                    System.out.println(cell.getStringCellValue());
-//                    list.add(cell.getStringCellValue());
-//                }
-//                lists.add(list);
-//            }
+            //第一行为标题
+            for (Row row : sheet) {
+                ArrayList<String> list = new ArrayList<String>();
+                for (Cell cell : row) {
+                    //根据不同类型转化成字符串
+                    cell.setCellType(Cell.CELL_TYPE_STRING);
+                    System.out.println(cell.getStringCellValue());
+                    list.add(cell.getStringCellValue());
+                }
+                lists.add(list);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -72,7 +73,7 @@ public class ExcelReader {
                 e.printStackTrace();
             }
         }
-        return sheet;
+        return lists;
     }
 
 

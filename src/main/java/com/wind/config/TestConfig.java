@@ -1,8 +1,9 @@
-package com.wind.common;
+package com.wind.config;
 
 import org.apache.http.impl.client.DefaultHttpClient;
 
 /**
+ * 公共测试配置
  * @Author mandy
  * @Create 2019/10/17 11:55
  */
