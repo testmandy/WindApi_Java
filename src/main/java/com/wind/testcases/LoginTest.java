@@ -1,10 +1,8 @@
 package com.wind.testcases;
 
-import com.wind.common.InterfaceName;
-import com.wind.common.ReadEnv;
+import com.wind.common.*;
 import com.wind.config.DBUtil;
 import com.wind.config.TestConfig;
-import com.wind.common.TestMethod;
 import com.wind.model.LoginModel;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
@@ -75,6 +73,29 @@ public class LoginTest {
         // 断言结果
         Assert.assertEquals(code,200);
         Assert.assertEquals(actureId,expectId);
+    }
+
+
+    @Test(groups = "loginTrue",description = "登录成功测试用例")
+    public void loginWithString() throws Exception {
+        RunExcel runExcel = new RunExcel();
+
+        // 以String形式传参
+        String data = runExcel.getRequestData(1);
+
+        // 接收response
+        String result = TestMethod.postWithString(TestConfig.loginUrl,data);
+        System.out.println("[Mylog]------result的内容为:" + result);
+        JSONObject resJson = new JSONObject(result);
+        System.out.println("[Mylog]------resJson的内容为:" + resJson);
+        // 获取实际结果
+        String actureId = resJson.getJSONObject("data").getString("id");
+        int code = resJson.getInt("code");
+        System.out.println("[Mylog]------用户expectId为：" + actureId);
+
+        // 为公共参数token重新赋值
+        TestConfig.token = resJson.getJSONObject("data").getString("token");
+
     }
 
 }

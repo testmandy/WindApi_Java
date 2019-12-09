@@ -1,5 +1,6 @@
 package com.wind.common;
 
+import com.alibaba.fastjson.JSONObject;
 import com.wind.config.TestConfig;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -65,10 +66,11 @@ public class TestMethod {
         // 设置request headers
         post.setHeader("x-sign", TestConfig.getSign());
         post.setHeader("x-token", TestConfig.token);
-        post.setHeader("content-type", "text/html");
+        post.setHeader("content-type", "application/json");
 
         // 设置request body
         StringEntity entity = new StringEntity(data,"utf-8");
+        System.out.println(data);
         post.setEntity(entity);
 
         // 接收response
@@ -104,5 +106,21 @@ public class TestMethod {
         int code = response.getStatusLine().getStatusCode();
         result = EntityUtils.toString(response.getEntity());
         return result;
+    }
+
+    public String main(String method,String url,String data) throws Exception {
+        String testUrl = ReadEnv.getData("base.url") + url;
+//        String json = (JSONObject.toJSONString(data));
+//        System.out.println("json的内容为：" + json);
+        System.out.println(testUrl);
+        String result = null;
+        if (method.equals("get")){
+            result = getMethod(testUrl);
+        } else {
+            result = postWithString(testUrl,data);
+        }
+        System.out.println("请求执行结果为：" + result);
+        return result;
+
     }
 }

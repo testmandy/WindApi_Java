@@ -22,7 +22,8 @@ public class ExcelReader {
     /**
      * 初始化表单
      */
-    private  sheet = getSheet();
+    private Sheet sheet = getSheet();
+
 
     /**
      * 根据fileType不同读取excel文件
@@ -30,16 +31,16 @@ public class ExcelReader {
      * @param path 地址
      * @throws IOException IO异常
      */
-    private Object readExcel(String path) {
+    private Workbook readExcel(String path) {
         String fileType = path.substring(path.lastIndexOf(".") + 1);
         // return a list contains many list
         List<List<String>> lists = new ArrayList<List<String>>();
         //读取excel文件
         InputStream is = null;
+        //获取工作薄
+        Workbook wb = null;
         try {
             is = new FileInputStream(path);
-            //获取工作薄
-            Workbook wb = null;
             if (fileType.equals("xls")) {
                 wb = new HSSFWorkbook(is);
             } else if (fileType.equals("xlsx")) {
@@ -47,26 +48,6 @@ public class ExcelReader {
             } else {
                 return null;
             }
-
-            //读取第一个工作页sheet
-            Sheet sheet = wb.getSheetAt(0);
-
-            System.out.println("sheet内容为：" + sheet);
-
-            //第一行为标题
-            // 打印每个单元格
-//            for (Row row : sheet) {
-//                ArrayList<String> list = new ArrayList<String>();
-//                for (Cell cell : row) {
-//                    //根据不同类型转化成字符串
-//                    cell.setCellType(Cell.CELL_TYPE_STRING);
-//                    System.out.println("单元格的内容为" + cell.getStringCellValue());
-//                    list.add(cell.getStringCellValue());
-//                }
-//                lists.add(list);
-//            }
-
-
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -76,8 +57,7 @@ public class ExcelReader {
                 e.printStackTrace();
             }
         }
-
-        return sheet;
+        return wb;
     }
 
 
@@ -86,64 +66,69 @@ public class ExcelReader {
      * 获取表单（默认第一个sheet）
      * @return 第一个表单
      */
-    private void getSheet(){
+    public Sheet getSheet(){
         String path = "E:\\WindApi\\src\\main\\java\\com\\wind\\data\\testcases.xls";
-        Object sheet = readExcel(path);
+        Workbook workbook = readExcel(path);
+        assert workbook != null;
+        Sheet sheet = workbook.getSheetAt(0);
         assert sheet != null;
+        return sheet;
     }
 
     /**
-     *
-     *
+     * 获取总行数
      * @return 行数
      */
-    private int getLines(){
-        //打印每行
+    public int getLines(){
         int nrows = sheet.getLastRowNum();
         System.out.println("sheet总行数为：" + nrows);
         return nrows;
     }
 
     /**
-     *
+     * 获取一行的内容
      * @param rowNum 第几行
      * @return 行的数据
      */
-    private Row getRow(sheet, int rowNum){
+    public Row getRow(int rowNum){
+        //打印每行
         Row row = sheet.getRow(rowNum);
         return row;
     }
 
     /**
-     *
-     * @param colNum 第几行
+     * 获取总列数
      * @return 列的数据
      */
-    private int getColLines(int colNum){
-        int ncols = 0;
-        ncols = getRow(getLines()).getLastCellNum();
+    public int getColLines(){
+        int ncols = getRow(getLines()).getLastCellNum();
         System.out.println("sheet总列数为：" + ncols);
         return ncols;
     }
 
     /**
-     *
-     * @param colNum 第几个单元格
+     * 获取单元格内容
+     * @param rowNum 第几行
+     * @param colNum 第几列
      */
-    private Cell getCell(int rowNum, int colNum){
-        Cell cell = getRow(rowNum).getCell(colNum);
-        System.out.println("单元格的内容为：" + cell);
-        return cell;
+    public String getCell(int rowNum, int colNum){
+        String cellData = null;
+        try {
+            Cell cell = getRow(rowNum).getCell(colNum);
+            if (cell != null){
+                cellData = cell.getStringCellValue();
+            }
+            System.out.println("单元格的内容为：" + cellData);
+        } catch (Exception e) {
+            System.out.println("[MyLog]--------单元格获取异常");
+        }
+        return cellData;
     }
 
 
-    @Test
     public void main() {
-        Object sheet = getSheet();
-        getCell(2,1);
-
+        getColLines();
+        getCell(1,1);
     }
-
-
 
 }
