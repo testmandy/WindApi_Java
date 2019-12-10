@@ -14,7 +14,7 @@ public class ExcelReader {
     /**
      * 初始化表单E:\WindApi\src\main\java\com\wind\data\testcases.xls
      */
-    private String path = System.getProperty("user.dir") + "/src/main/resources/testcases.xlsx";
+    private String path = System.getProperty("user.dir") + "/src/main/java/com/wind/data/testcases.xlsx";
     private Workbook wb = getWorkbook();
     private Sheet sheet = wb.getSheetAt(0);
 
