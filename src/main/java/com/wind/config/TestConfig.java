@@ -1,7 +1,5 @@
 package com.wind.config;
 
-import com.wind.common.ExcelReader;
-import com.wind.common.TestMethod;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 /**
@@ -37,8 +35,8 @@ public class TestConfig {
     public final int MethodColNum = 3;
     public final int IsHeaderColNum = 4;
     public final int DependentIdColNum = 5;
-    public final int DependentDataColNum = 6;
-    public final int DependentKeyColNum = 7;
+    public final int DependentKeyColNum = 6;
+    public final int ResponseKeyColNum = 7;
     public final int RequestDataColNum = 8;
     public final int ExpectDataColNum = 9;
     public final int ActualDataColNum = 10;

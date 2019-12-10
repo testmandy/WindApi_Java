@@ -1,14 +1,8 @@
 package com.wind.common;
 
-/**
- * @Author mandy
- * @Create 2019/11/14 14:51
- */
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.testng.annotations.Test;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,12 +23,11 @@ public class ExcelReader {
      * 根据fileType不同读取excel文件
      *
      * @param path 地址
-     * @throws IOException IO异常
      */
     private Workbook readExcel(String path) {
         String fileType = path.substring(path.lastIndexOf(".") + 1);
         // return a list contains many list
-        List<List<String>> lists = new ArrayList<List<String>>();
+        List<List<String>> lists = new ArrayList<>();
         //读取excel文件
         InputStream is = null;
         //获取工作薄
@@ -64,7 +57,7 @@ public class ExcelReader {
      * 获取workbook
      * @return workbook
      */
-    public Workbook getWorkbook(){
+    private Workbook getWorkbook(){
         assert path != null;
         Workbook workbook = readExcel(path);
         assert workbook != null;
@@ -97,20 +90,9 @@ public class ExcelReader {
      * @param rowNum 第几行
      * @return 行的数据
      */
-    public Row getRow(int rowNum){
+    private Row getRow(int rowNum){
         //打印每行
-        Row row = sheet.getRow(rowNum);
-        return row;
-    }
-
-    /**
-     * 获取总列数
-     * @return 列的数据
-     */
-    public int getColLines(){
-        int ncols = getRow(getLines()).getLastCellNum();
-//        System.out.println("[MyLog]--------sheet总列数为：" + ncols);
-        return ncols;
+        return sheet.getRow(rowNum);
     }
 
     /**
@@ -135,7 +117,6 @@ public class ExcelReader {
 
 
     public void main() {
-        getColLines();
         getCell(1,1);
     }
 
@@ -156,14 +137,20 @@ public class ExcelReader {
             }
             cell.setCellValue(data);
             System.out.println("修改后单元格内容为： " + cell.getStringCellValue());
-            // 格式
+            // 定义单元格样式1：pass的用例
+            CellStyle cellStyle1 = wb.createCellStyle();
+            cellStyle1.setFillForegroundColor(IndexedColors.LIGHT_GREEN.getIndex()); // 前景色
+            cellStyle1.setFillPattern(CellStyle.SOLID_FOREGROUND);
+            // 定义单元格样式1：fail的用例
             CellStyle cellStyle2 = wb.createCellStyle();
             cellStyle2.setFillForegroundColor(IndexedColors.RED.getIndex()); // 前景色
             cellStyle2.setFillPattern(CellStyle.SOLID_FOREGROUND);
             cellStyle2.setBorderBottom(CellStyle.BORDER_THIN); // 底部边框
-            // 运行失败时设置单元格格式
+            // 运行成功或失败，分别设置不同单元格样式
             if (data.equals("fail")){
                 cell.setCellStyle(cellStyle2);
+            }else if (!data.equals("")){
+                cell.setCellStyle(cellStyle1);
             }
             FileOutputStream os = new FileOutputStream(path);
             wb.write(os);//一定要写这句代码，否则无法将数据写入excel文档中
@@ -175,7 +162,7 @@ public class ExcelReader {
 
     // 测试代码
 //    @Test
-    public void test() throws IOException {
+    public void test() {
         writeCell(1, 10, "fail");
 
     }

@@ -66,7 +66,11 @@ public class TestMethod {
         // 设置request headers
         post.setHeader("x-sign", TestConfig.getSign());
         post.setHeader("x-token", TestConfig.token);
-        post.setHeader("content-type", "application/json");
+        if (data.startsWith("{")){
+            post.setHeader("content-type", "application/json");
+        }else {
+            post.setHeader("content-type", "application/x-www-form-urlencoded");
+        }
 
         // 设置request body
         StringEntity entity = new StringEntity(data,"utf-8");
@@ -110,10 +114,8 @@ public class TestMethod {
 
     public String main(String method,String url,String data) throws Exception {
         String testUrl = ReadEnv.getData("base.url") + url;
-//        String json = (JSONObject.toJSONString(data));
-//        System.out.println("json的内容为：" + json);
         System.out.println(testUrl);
-        String result = null;
+        String result;
         if (method.equals("get")){
             testUrl = testUrl + data;
             result = getMethod(testUrl);
