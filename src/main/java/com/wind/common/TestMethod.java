@@ -115,11 +115,11 @@ public class TestMethod {
         System.out.println(testUrl);
         String result = null;
         if (method.equals("get")){
+            testUrl = testUrl + data;
             result = getMethod(testUrl);
         } else {
             result = postWithString(testUrl,data);
         }
-        System.out.println("请求执行结果为：" + result);
         return result;
 
     }

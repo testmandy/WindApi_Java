@@ -1,28 +1,39 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="Wind什么风接口测试套件">
+    <!--<test name="Wind什么风接口测试用例">-->
+        <!--<classes>-->
+            <!--<class name="com.wind.testcases.LoginTest">-->
+                <!--<methods>-->
+                    <!--<include name="loginTrue"/>-->
+                <!--</methods>-->
+            <!--</class>-->
+            <!--<class name="com.wind.testcases.CardTest">-->
+                <!--<methods>-->
+                    <!--<include name="getTopicList"/>-->
+                    <!--<include name="getMyCards"/>-->
+                    <!--<include name="publishCard"/>-->
+                    <!--<include name="modifyCard"/>-->
+                    <!--<include name="removeAllCards"/>-->
+                    <!--<include name="publishManyCards"/>-->
+
+
+                <!--</methods>-->
+            <!--</class>-->
+        <!--</classes>-->
+    <!--</test>-->
+
     <test name="Wind什么风接口测试用例">
         <classes>
-            <class name="com.wind.testcases.LoginTest">
+            <class name="com.wind.testcases.RunExcel">
                 <methods>
-                    <include name="loginTrue"/>
-                </methods>
-            </class>
-            <class name="com.wind.testcases.CardTest">
-                <methods>
-                    <include name="getTopicList"/>
-                    <include name="getMyCards"/>
-                    <include name="publishCard"/>
-                    <include name="modifyCard"/>
-                    <include name="removeAllCards"/>
-                    <include name="publishManyCards"/>
-
-
+                    <include name="main"/>
                 </methods>
             </class>
         </classes>
 
     </test>
+
     <listeners>
         <listener class-name="com.wind.config.ExtentTestNGIReporterListener"/>
     </listeners>

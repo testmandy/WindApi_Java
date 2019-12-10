@@ -9,9 +9,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.testng.annotations.Test;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,9 +18,11 @@ import java.util.List;
  */
 public class ExcelReader {
     /**
-     * 初始化表单
+     * 初始化表单E:\WindApi\src\main\java\com\wind\data\testcases.xls
      */
-    private Sheet sheet = getSheet();
+    private String path = System.getProperty("user.dir") + "/src/main/resources/testcases.xlsx";
+    private Workbook wb = getWorkbook();
+    private Sheet sheet = wb.getSheetAt(0);
 
 
     /**
@@ -60,6 +60,16 @@ public class ExcelReader {
         return wb;
     }
 
+    /**
+     * 获取workbook
+     * @return workbook
+     */
+    public Workbook getWorkbook(){
+        assert path != null;
+        Workbook workbook = readExcel(path);
+        assert workbook != null;
+        return workbook;
+    }
 
 
     /**
@@ -67,10 +77,7 @@ public class ExcelReader {
      * @return 第一个表单
      */
     public Sheet getSheet(){
-        String path = "E:\\WindApi\\src\\main\\java\\com\\wind\\data\\testcases.xls";
-        Workbook workbook = readExcel(path);
-        assert workbook != null;
-        Sheet sheet = workbook.getSheetAt(0);
+        Sheet sheet = getWorkbook().getSheetAt(0);
         assert sheet != null;
         return sheet;
     }
@@ -81,7 +88,7 @@ public class ExcelReader {
      */
     public int getLines(){
         int nrows = sheet.getLastRowNum();
-        System.out.println("sheet总行数为：" + nrows);
+        System.out.println("[MyLog]--------sheet总行数为：" + nrows);
         return nrows;
     }
 
@@ -102,7 +109,7 @@ public class ExcelReader {
      */
     public int getColLines(){
         int ncols = getRow(getLines()).getLastCellNum();
-        System.out.println("sheet总列数为：" + ncols);
+//        System.out.println("[MyLog]--------sheet总列数为：" + ncols);
         return ncols;
     }
 
@@ -117,8 +124,9 @@ public class ExcelReader {
             Cell cell = getRow(rowNum).getCell(colNum);
             if (cell != null){
                 cellData = cell.getStringCellValue();
+            }else {
+                cellData = null;
             }
-            System.out.println("单元格的内容为：" + cellData);
         } catch (Exception e) {
             System.out.println("[MyLog]--------单元格获取异常");
         }
@@ -130,5 +138,47 @@ public class ExcelReader {
         getColLines();
         getCell(1,1);
     }
+
+
+    /**
+     * 写入数据到excel单元格
+     * @param rowNum 第几行
+     * @param colNum 第几列
+     * @param data 数据
+     */
+    public void writeCell(int rowNum, int colNum, String data) {
+        try {
+            Cell cell = getRow(rowNum).getCell(colNum);
+            if (cell != null){
+                System.out.println("原单元格内容为： " + cell.getStringCellValue());
+            }else {
+                cell = getRow(rowNum).createCell(colNum);
+            }
+            cell.setCellValue(data);
+            System.out.println("修改后单元格内容为： " + cell.getStringCellValue());
+            // 格式
+            CellStyle cellStyle2 = wb.createCellStyle();
+            cellStyle2.setFillForegroundColor(IndexedColors.RED.getIndex()); // 前景色
+            cellStyle2.setFillPattern(CellStyle.SOLID_FOREGROUND);
+            cellStyle2.setBorderBottom(CellStyle.BORDER_THIN); // 底部边框
+            // 运行失败时设置单元格格式
+            if (data.equals("fail")){
+                cell.setCellStyle(cellStyle2);
+            }
+            FileOutputStream os = new FileOutputStream(path);
+            wb.write(os);//一定要写这句代码，否则无法将数据写入excel文档中
+            os.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // 测试代码
+//    @Test
+    public void test() throws IOException {
+        writeCell(1, 10, "fail");
+
+    }
+
 
 }
