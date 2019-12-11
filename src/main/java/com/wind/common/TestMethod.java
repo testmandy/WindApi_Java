@@ -114,10 +114,13 @@ public class TestMethod {
 
     public String main(String method,String url,String data) throws Exception {
         String testUrl = ReadEnv.getData("base.url") + url;
-        System.out.println(testUrl);
+        System.out.println("[MyLog]--------api地址：" + testUrl);
         String result;
         if (method.equals("get")){
-            testUrl = testUrl + data;
+            if (data != null) {
+                testUrl = (testUrl + data).replaceAll(" ", "");
+            }
+            System.out.println("[MyLog]--------get请求拼接后的url：" + testUrl);
             result = getMethod(testUrl);
         } else {
             result = postWithString(testUrl,data);

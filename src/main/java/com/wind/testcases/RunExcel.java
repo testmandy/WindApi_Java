@@ -5,6 +5,7 @@ import com.wind.common.TestMethod;
 import com.wind.config.TestConfig;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
@@ -18,17 +19,20 @@ public class RunExcel {
 
     private TestMethod testMethod = new TestMethod();
     private TestConfig config = new TestConfig();
+    private ExcelReader excelReader = new ExcelReader();
+    private int colSum = excelReader.getLines();
+
 
     /**
      * 获取每个单元格数据
      */
-    private ExcelReader excelReader = new ExcelReader();
     private String getId(int rowNum) { return excelReader.getCell(rowNum, config.IdColNum); }
     private String getModelName(int rowNum) { return excelReader.getCell(rowNum, config.ModelNameColNum); }
+    private String getApiName(int rowNum) { return excelReader.getCell(rowNum, config.ApiNameColNum); }
     private String getUrl(int rowNum) { return excelReader.getCell(rowNum, config.UrlColNum); }
     private String getMethod(int rowNum) { return excelReader.getCell(rowNum, config.MethodColNum); }
     private String getIsRun(int rowNum) { return excelReader.getCell(rowNum, config.IsHeaderColNum); }
-    private String getDependentId(int rowNum) { return excelReader.getCell(rowNum, config.DependentIdColNum);}
+    private String getDependentCase(int rowNum) { return excelReader.getCell(rowNum, config.DependentIdColNum);}
     private String getDependentKey(int rowNum) { return excelReader.getCell(rowNum,config.DependentKeyColNum); }
     private String getResponseKey(int rowNum) { return excelReader.getCell(rowNum, config.ResponseKeyColNum); }
     String getRequestData(int rowNum) { return excelReader.getCell(rowNum, config.RequestDataColNum); }
@@ -56,8 +60,8 @@ public class RunExcel {
         // 如果isRun为true，则运行
         if (isRun.equals("yes")){
             // 如果有依赖，先执行依赖case，再把取到的依赖值赋值给本case
-            if (getDependentId(rowNum) != null && !getDependentId(rowNum).equals("")) {
-                System.out.println("[MyLog]--------getDependentId为" + getDependentId(rowNum));
+            if (getDependentCase(rowNum) != null && !getDependentCase(rowNum).equals("")) {
+                System.out.println("[MyLog]--------需要先执行依赖case：" + getDependentCase(rowNum));
                 String dependentValue = runDependentCase(rowNum);
                 System.out.println("[MyLog]--------执行依赖case获取到的依赖数据为: " + dependentValue);
                 String newData;
@@ -80,27 +84,27 @@ public class RunExcel {
             } else {
                 actualResult = testMethod.main(getMethod(rowNum), getUrl(rowNum), getRequestData(rowNum));
             }
-            System.out.printf("[MyLog]--------%s[%s]的执行结果为：%s \n",getId(rowNum),getModelName(rowNum),actualResult);
-            JSONObject resJson = new JSONObject(actualResult);
-            Object code = resJson.get("code");
-
-            // 如果是登录接口，为公共参数token重新赋值
-            if(getUrl(rowNum).contains("register")){
-                TestConfig.token = resJson.getJSONObject("data").getString("token");
+            System.out.printf("[MyLog]--------%s[%s]的执行结果为：%s \n",getId(rowNum),getApiName(rowNum),actualResult);
+            JSONObject resJson;
+            Object code;
+            if (actualResult.startsWith("{")) {
+                resJson = new JSONObject(actualResult);
+                code = resJson.get("code");
+                // 如果是登录接口，为公共参数token重新赋值
+                if(getUrl(rowNum).contains("register")){
+                    TestConfig.token = resJson.getJSONObject("data").getString("token");
+                }
+                // 把执行结果写入excel
+                if (code.equals(200)){
+                    excelReader.writeCell(rowNum,config.ActualDataColNum,actualResult);
+                }else {
+                    excelReader.writeCell(rowNum,config.ActualDataColNum,"fail");
+                }
+            } else {
+                System.out.println("[ErrorInfo]--------用例执行失败");
             }
-
-            // 把执行结果写入excel
-            if (code.equals(200)){
-                excelReader.writeCell(rowNum,config.ActualDataColNum,actualResult);
-            }else {
-                excelReader.writeCell(rowNum,config.ActualDataColNum,"fail");
-            }
-
-            // 断言
-//            Assert.assertEquals(msg, getExpectResult(rowNum));
         }
         return actualResult;
-
     }
 
     /**
@@ -110,40 +114,42 @@ public class RunExcel {
     private String runDependentCase(int rowNum) throws Exception {
         // 执行用例
         String dependentValue = null;
-        for (int i = 1; i < excelReader.getLines(); i++) {
+        for (int i=1;i<colSum;i++) {
             int findRowNum;
-            String findId = excelReader.getCell(i, 0);
-            if (getDependentId(rowNum).equals(findId)) {
+            String findModelName = excelReader.getCell(i, config.ApiNameColNum);
+            if (getDependentCase(rowNum).equals(findModelName)) {
                 findRowNum = i;
                 String dependentResult = runCase(findRowNum,"yes");
-                // 获取实际结果
-                JSONObject resJson = new JSONObject(dependentResult);
-                // 分割依赖数据
-                if (getResponseKey(rowNum).contains(":")){
-                    String[] dependentKeys = getResponseKey(rowNum).split(":", 2);
-                    // 存储id
-                    JSONArray list = resJson.getJSONObject("data").getJSONArray(dependentKeys[0]);
-                    dependentValue = list.getJSONObject(0).getString(dependentKeys[1]);
-                }else{
-                    dependentValue = resJson.getJSONObject("data").getString(getResponseKey(rowNum));
+                if (dependentResult.startsWith("{")) {
+                    // 获取实际结果
+                    JSONObject resJson = new JSONObject(dependentResult);
+                    // 分割依赖数据
+                    if (getResponseKey(rowNum).contains(":")){
+                        String[] dependentKeys = getResponseKey(rowNum).split(":", 3);
+                        // 存储id
+                        JSONArray list;
+                        try {
+                            list = resJson.getJSONObject("data").getJSONArray(dependentKeys[0]);
+                        } catch (JSONException e) {
+                            System.out.println("[ErrorInfo]--------依赖case执行失败");
+                            continue;
+                        }
+                        if (dependentKeys.length==2) {
+                            dependentValue = list.getJSONObject(0).getString(dependentKeys[1]);
+                        }else {
+                            JSONObject targetJson = list.getJSONObject(0).getJSONObject(dependentKeys[1]);
+                            dependentValue = targetJson.getString(dependentKeys[2]);
+                        }
+                    }else{
+                        dependentValue = resJson.getJSONObject("data").getString(getResponseKey(rowNum));
+                    }
+                    break;
+                } else {
+                    System.out.println("[ErrorInfo]--------依赖case执行失败");
                 }
-                break;
             }
         }
         return dependentValue;
-    }
-
-    /**
-     * 遍历执行每条用例
-     */
-    @Test
-    public void main() throws Exception {
-        resetResult();
-        for (int i=1;i<=excelReader.getLines();i++) {
-            System.out.printf("[MyLog]----------------开始执行第 %s 条case---------------- \n",String.valueOf(i));
-            runCase(i,getIsRun(i));
-        }
-
     }
 
 
@@ -152,10 +158,24 @@ public class RunExcel {
      */
     private void resetResult() {
         System.out.println("[MyLog]--------开始重置结果列--------");
-        for (int i=1;i<=excelReader.getLines();i++) {
+        for (int i=1;i<=colSum;i++) {
             excelReader.writeCell(i,config.ActualDataColNum,"");
+        }
+        System.out.println("[MyLog]--------[实际结果]列重置完成--------");
+    }
+
+    /**
+     * 遍历执行每条用例
+     */
+    @Test
+    public void main() throws Exception {
+        resetResult();
+        for (int i=1;i<=colSum;i++) {
+            System.out.printf("[MyLog]----------------开始执行第 %s 条case---------------- \n",String.valueOf(i));
+            runCase(i,getIsRun(i));
         }
 
     }
+
 
 }

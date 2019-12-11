@@ -81,7 +81,7 @@ public class ExcelReader {
      */
     public int getLines(){
         int nrows = sheet.getLastRowNum();
-        System.out.println("[MyLog]--------sheet总行数为：" + nrows);
+        System.out.println("[MyLog]--------当前case总数为：" + nrows);
         return nrows;
     }
 
@@ -130,13 +130,15 @@ public class ExcelReader {
     public void writeCell(int rowNum, int colNum, String data) {
         try {
             Cell cell = getRow(rowNum).getCell(colNum);
-            if (cell != null){
-                System.out.println("原单元格内容为： " + cell.getStringCellValue());
-            }else {
+            if (cell == null){
                 cell = getRow(rowNum).createCell(colNum);
             }
             cell.setCellValue(data);
-            System.out.println("修改后单元格内容为： " + cell.getStringCellValue());
+//            System.out.println("修改后单元格内容为： " + cell.getStringCellValue());
+            // 定义单元格样式0：未执行的重置用例
+            CellStyle cellStyle0 = wb.createCellStyle();
+            cellStyle0.setFillForegroundColor(IndexedColors.WHITE.getIndex()); // 前景色
+            cellStyle0.setFillPattern(CellStyle.SOLID_FOREGROUND);
             // 定义单元格样式1：pass的用例
             CellStyle cellStyle1 = wb.createCellStyle();
             cellStyle1.setFillForegroundColor(IndexedColors.LIGHT_GREEN.getIndex()); // 前景色
@@ -149,7 +151,9 @@ public class ExcelReader {
             // 运行成功或失败，分别设置不同单元格样式
             if (data.equals("fail")){
                 cell.setCellStyle(cellStyle2);
-            }else if (!data.equals("")){
+            }else if (data.equals("")){
+                cell.setCellStyle(cellStyle0);
+            }else {
                 cell.setCellStyle(cellStyle1);
             }
             FileOutputStream os = new FileOutputStream(path);

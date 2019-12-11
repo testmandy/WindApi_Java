@@ -29,18 +29,18 @@ public class TestConfig {
         return sign;
     }
 
+    // 定义testcase在excel中的列数
     public final int IdColNum = 0;
     public final int ModelNameColNum = 1;
-    public final int UrlColNum = 2;
-    public final int MethodColNum = 3;
-    public final int IsHeaderColNum = 4;
-    public final int DependentIdColNum = 5;
-    public final int DependentKeyColNum = 6;
-    public final int ResponseKeyColNum = 7;
-    public final int RequestDataColNum = 8;
-    public final int ExpectDataColNum = 9;
-    public final int ActualDataColNum = 10;
-
-
+    public final int ApiNameColNum = 2;
+    public final int UrlColNum = 3;
+    public final int MethodColNum = 4;
+    public final int IsHeaderColNum = 5;
+    public final int DependentIdColNum = 6;
+    public final int DependentKeyColNum = 7;
+    public final int ResponseKeyColNum = 8;
+    public final int RequestDataColNum = 9;
+    public final int ExpectDataColNum = 10;
+    public final int ActualDataColNum = 11;
 
 }
