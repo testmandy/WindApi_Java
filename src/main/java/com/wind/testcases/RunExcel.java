@@ -121,28 +121,43 @@ public class RunExcel {
                 findRowNum = i;
                 String dependentResult = runCase(findRowNum,"yes");
                 if (dependentResult.startsWith("{")) {
-                    // 获取实际结果
+                    // 获取实际结果list
                     JSONObject resJson = new JSONObject(dependentResult);
-                    // 分割依赖数据
-                    if (getResponseKey(rowNum).contains(":")){
-                        String[] dependentKeys = getResponseKey(rowNum).split(":", 3);
+                    String dependentKey = getResponseKey(rowNum);
+                    // 如果有多个id，分割依赖数据
+                    if (dependentKey.contains(":")){
+                        String[] dependentKeys = dependentKey.split(":", 3);
                         // 存储id
                         JSONArray list;
                         try {
+                            // 获取list中的第一个json对象
                             list = resJson.getJSONObject("data").getJSONArray(dependentKeys[0]);
                         } catch (JSONException e) {
                             System.out.println("[ErrorInfo]--------The dependent case run failed!");
                             continue;
                         }
                         if (dependentKeys.length==2) {
-                            dependentValue = list.getJSONObject(0).getString(dependentKeys[1]);
+                            try {
+                                dependentValue = list.getJSONObject(0).getString(dependentKeys[1]);
+                            } catch (JSONException e) {
+                                System.out.println("[ErrorInfo]--------The dependent case run failed!");
+                                continue;                            }
                         }else {
                             JSONObject targetJson = list.getJSONObject(0).getJSONObject(dependentKeys[1]);
                             dependentValue = targetJson.getString(dependentKeys[2]);
                         }
+                    }else if(dependentKey.contains(",")){
+                        String[] dependentKeys = dependentKey.split(",", 2);
+                        try {
+                            dependentValue = resJson.getJSONObject("data").getJSONObject(dependentKeys[0]).getString(dependentKeys[1]);
+                            System.out.println("[1111111111111111111111111]"+dependentValue);
+                        } catch (JSONException e) {
+                            System.out.println("[ErrorInfo]--------The dependent case run failed!");
+                            continue;
+                        }
                     }else{
                         try {
-                            dependentValue = resJson.getJSONObject("data").getString(getResponseKey(rowNum));
+                            dependentValue = resJson.getJSONObject("data").getString(dependentKey);
                         } catch (JSONException e) {
                             System.out.println("[ErrorInfo]--------The dependent case run failed!");
                             continue;
