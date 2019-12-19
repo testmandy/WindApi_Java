@@ -150,7 +150,6 @@ public class RunExcel {
                         String[] dependentKeys = dependentKey.split(",", 2);
                         try {
                             dependentValue = resJson.getJSONObject("data").getJSONObject(dependentKeys[0]).getString(dependentKeys[1]);
-                            System.out.println("[1111111111111111111111111]"+dependentValue);
                         } catch (JSONException e) {
                             System.out.println("[ErrorInfo]--------The dependent case run failed!");
                             continue;
@@ -181,7 +180,7 @@ public class RunExcel {
         for (int i=1;i<=colSum;i++) {
             excelReader.writeCell(i,config.ActualDataColNum,"");
         }
-        System.out.println("[MyLog]--------Reset finished--------");
+        System.out.println("[MyLog]--------Reset finished！");
     }
 
     /**
