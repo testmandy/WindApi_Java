@@ -81,7 +81,7 @@ public class ExcelReader {
      */
     public int getLines(){
         int nrows = sheet.getLastRowNum();
-        System.out.println("[MyLog]--------当前case总数为：" + nrows);
+        System.out.println("[MyLog]--------The CASE total number is: " + nrows);
         return nrows;
     }
 
@@ -110,7 +110,7 @@ public class ExcelReader {
                 cellData = null;
             }
         } catch (Exception e) {
-            System.out.println("[MyLog]--------单元格获取异常");
+            System.out.println("[MyLog]--------Getting cell value exception");
         }
         return cellData;
     }
@@ -149,7 +149,7 @@ public class ExcelReader {
             cellStyle2.setFillPattern(CellStyle.SOLID_FOREGROUND);
             cellStyle2.setBorderBottom(CellStyle.BORDER_THIN); // 底部边框
             // 运行成功或失败，分别设置不同单元格样式
-            if (data.equals("fail")){
+            if (data.startsWith("fail")){
                 cell.setCellStyle(cellStyle2);
             }else if (data.equals("")){
                 cell.setCellStyle(cellStyle0);

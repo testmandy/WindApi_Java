@@ -61,9 +61,9 @@ public class RunExcel {
         if (isRun.equals("yes")){
             // 如果有依赖，先执行依赖case，再把取到的依赖值赋值给本case
             if (getDependentCase(rowNum) != null && !getDependentCase(rowNum).equals("")) {
-                System.out.println("[MyLog]--------需要先执行依赖case：" + getDependentCase(rowNum));
+                System.out.println("[MyLog]--------Run dependent case at first:" + getDependentCase(rowNum));
                 String dependentValue = runDependentCase(rowNum);
-                System.out.println("[MyLog]--------执行依赖case获取到的依赖数据为: " + dependentValue);
+                System.out.println("[MyLog]--------The dependent value is: " + dependentValue);
                 String newData;
                 String dependentKey = getDependentKey(rowNum);
 
@@ -78,13 +78,13 @@ public class RunExcel {
                     newData = requestData + "&" + dependentKey + "=" + dependentValue;
                 }
 
-                System.out.println("[MyLog]--------新的请求数据为" + newData);
+                System.out.println("[MyLog]--------The new request data is: " + newData);
                 actualResult = testMethod.main(getMethod(rowNum), getUrl(rowNum), newData);
 
             } else {
                 actualResult = testMethod.main(getMethod(rowNum), getUrl(rowNum), getRequestData(rowNum));
             }
-            System.out.printf("[MyLog]--------%s[%s]的执行结果为：%s \n",getId(rowNum),getApiName(rowNum),actualResult);
+            System.out.printf("[MyLog]--------%s[%s] running result is: %s \n",getId(rowNum),getApiName(rowNum),actualResult);
             JSONObject resJson;
             Object code;
             if (actualResult.startsWith("{")) {
@@ -98,10 +98,10 @@ public class RunExcel {
                 if (code.equals(200)){
                     excelReader.writeCell(rowNum,config.ActualDataColNum,actualResult);
                 }else {
-                    excelReader.writeCell(rowNum,config.ActualDataColNum,"fail");
+                    excelReader.writeCell(rowNum,config.ActualDataColNum,"failed: "+actualResult);
                 }
             } else {
-                System.out.println("[ErrorInfo]--------用例执行失败");
+                System.out.println("[ErrorInfo]--------Running failed!");
             }
         }
         return actualResult;
@@ -131,7 +131,7 @@ public class RunExcel {
                         try {
                             list = resJson.getJSONObject("data").getJSONArray(dependentKeys[0]);
                         } catch (JSONException e) {
-                            System.out.println("[ErrorInfo]--------依赖case执行失败");
+                            System.out.println("[ErrorInfo]--------The dependent case run failed!");
                             continue;
                         }
                         if (dependentKeys.length==2) {
@@ -141,11 +141,16 @@ public class RunExcel {
                             dependentValue = targetJson.getString(dependentKeys[2]);
                         }
                     }else{
-                        dependentValue = resJson.getJSONObject("data").getString(getResponseKey(rowNum));
+                        try {
+                            dependentValue = resJson.getJSONObject("data").getString(getResponseKey(rowNum));
+                        } catch (JSONException e) {
+                            System.out.println("[ErrorInfo]--------The dependent case run failed!");
+                            continue;
+                        }
                     }
                     break;
                 } else {
-                    System.out.println("[ErrorInfo]--------依赖case执行失败");
+                    System.out.println("[ErrorInfo]--------The dependent case run failed!");
                 }
             }
         }
@@ -157,11 +162,11 @@ public class RunExcel {
      * 执行用例前把结果置空
      */
     private void resetResult() {
-        System.out.println("[MyLog]--------开始重置结果列--------");
+        System.out.println("[MyLog]--------Start to reset the actual cell value--------");
         for (int i=1;i<=colSum;i++) {
             excelReader.writeCell(i,config.ActualDataColNum,"");
         }
-        System.out.println("[MyLog]--------[实际结果]列重置完成--------");
+        System.out.println("[MyLog]--------Reset finished--------");
     }
 
     /**
@@ -171,7 +176,7 @@ public class RunExcel {
     public void main() throws Exception {
         resetResult();
         for (int i=1;i<=colSum;i++) {
-            System.out.printf("[MyLog]----------------开始执行第 %s 条case---------------- \n",String.valueOf(i));
+            System.out.printf("[MyLog]----------------Start to run THE NO.%s case---------------- \n",String.valueOf(i));
             runCase(i,getIsRun(i));
         }
 

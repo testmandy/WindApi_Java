@@ -1,4 +1,4 @@
-package com.wind.config;
+package com.wind.common;
 
 /**
  * 实现数据库查询等操作，但如果使用了mybatis框架，则不再使用这套代码。

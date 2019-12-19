@@ -1,4 +1,4 @@
-package com.wind.config;
+package com.wind.common;
 
 /**测试报告模板，可套用
  *

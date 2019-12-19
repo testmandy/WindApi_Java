@@ -42,7 +42,7 @@ public class TestMethod {
         // 设置request headers
         get.setHeader("x-sign", TestConfig.getSign());
         get.setHeader("x-token", TestConfig.token);
-        System.out.println("[Mylog]------token为：" + TestConfig.token);
+//        System.out.println("[Mylog]--------The logging token is: " + TestConfig.token);
 
         // 接收response
         HttpResponse response = TestConfig.defaultHttpClient.execute(get);
@@ -114,13 +114,13 @@ public class TestMethod {
 
     public String main(String method,String url,String data) throws Exception {
         String testUrl = ReadEnv.getData("base.url") + url;
-        System.out.println("[MyLog]--------api地址：" + testUrl);
+        System.out.println("[MyLog]--------api address is: " + testUrl);
         String result;
         if (method.equals("get")){
             if (data != null) {
                 testUrl = (testUrl + data).replaceAll(" ", "");
             }
-            System.out.println("[MyLog]--------get请求拼接后的url：" + testUrl);
+            System.out.println("[MyLog]--------The GET mothod url is: " + testUrl);
             result = getMethod(testUrl);
         } else {
             result = postWithString(testUrl,data);

@@ -1,7 +1,7 @@
 package com.wind.testcases;
 
 import com.wind.common.*;
-import com.wind.config.DBUtil;
+import com.wind.common.DBUtil;
 import com.wind.config.TestConfig;
 import com.wind.model.LoginModel;
 import org.apache.http.impl.client.DefaultHttpClient;

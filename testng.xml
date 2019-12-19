@@ -35,6 +35,6 @@
     </test>
 
     <listeners>
-        <listener class-name="com.wind.config.ExtentTestNGIReporterListener"/>
+        <listener class-name="com.wind.common.ExtentTestNGIReporterListener"/>
     </listeners>
 </suite>

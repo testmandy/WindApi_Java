@@ -1,7 +1,7 @@
 package com.wind.testcases;
 
 import com.wind.common.ReadEnv;
-import com.wind.config.DBUtil;
+import com.wind.common.DBUtil;
 import com.wind.config.TestConfig;
 import com.wind.common.TestMethod;
 import org.apache.http.NameValuePair;

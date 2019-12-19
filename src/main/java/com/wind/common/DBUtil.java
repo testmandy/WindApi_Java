@@ -1,4 +1,4 @@
-package com.wind.config;
+package com.wind.common;
 
 import org.apache.ibatis.session.*;
 import java.io.IOException;
